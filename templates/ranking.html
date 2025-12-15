@@ -7,9 +7,11 @@
 {% for r in ranking %}
 <div class="card">
     <h3>Rank {{ r.rank }}</h3>
-    <p><b>{{ r.resource }}</b> ({{ r.votes }} votes)</p>
+    <p><strong>Requested by:</strong> {{ r.name }}</p>
+    <p><strong>Resource:</strong> {{ r.resource }}</p>
+    <p><strong>Reason:</strong> {{ r.reason }}</p>
+    <p>Votes: {{ r.votes }}</p>
     <p>{{ r.explanation }}</p>
 </div>
 {% endfor %}
-
 {% endblock %}
