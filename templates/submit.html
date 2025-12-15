@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Submit{% endblock %}
+
+{% block content %}
+<h2>Submit Resource Request</h2>
+<form method="POST">
+    <input name="name" placeholder="Your Name" required>
+    <input name="resource" placeholder="Resource Needed" required>
+    <textarea name="reason" placeholder="Reason" required></textarea>
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}
