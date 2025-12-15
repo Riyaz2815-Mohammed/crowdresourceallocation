@@ -59,7 +59,8 @@ def cast_vote(id):
 @app.route("/ranking")
 def ranking():
     requests = ResourceRequest.query.all()
-
+    
+    # Sort requests individually by vote count
     ranked = sorted(
         requests,
         key=lambda r: len(r.votes),
@@ -68,16 +69,20 @@ def ranking():
 
     ranking_data = []
     for index, r in enumerate(ranked, start=1):
-        explanation = f"Ranked #{index} because it received {len(r.votes)} vote(s)."
+        explanation = (
+            f"Ranked #{index} because it received {len(r.votes)} vote(s)."
+        )
         ranking_data.append({
             "rank": index,
             "name": r.name,
             "resource": r.resource,
+            "reason": r.reason,
             "votes": len(r.votes),
             "explanation": explanation
         })
 
     return render_template("ranking.html", ranking=ranking_data)
+
 
 
 if __name__ == "__main__":
