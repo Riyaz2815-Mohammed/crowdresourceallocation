@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Ranking{% endblock %}
+
+{% block content %}
+<h2>Ranked Allocation List</h2>
+
+{% for r in ranking %}
+<div class="card">
+    <h3>Rank {{ r.rank }}</h3>
+    <p><b>{{ r.resource }}</b> ({{ r.votes }} votes)</p>
+    <p>{{ r.explanation }}</p>
+</div>
+{% endfor %}
+
+{% endblock %}
