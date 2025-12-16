@@ -1,17 +1,25 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block title %}Ranking{% endblock %}
 
 {% block content %}
-<h2>Ranked Allocation List</h2>
+<h3 class="mb-4">Ranked Allocation List</h3>
 
 {% for r in ranking %}
-<div class="card">
-    <h3>Rank {{ r.rank }}</h3>
-    <p><strong>Requested by:</strong> {{ r.name }}</p>
-    <p><strong>Resource:</strong> {{ r.resource }}</p>
-    <p><strong>Reason:</strong> {{ r.reason }}</p>
-    <p>Votes: {{ r.votes }}</p>
-    <p>{{ r.explanation }}</p>
+<div class="card shadow p-3 mb-3">
+    <div class="d-flex justify-content-between">
+        <h5>Rank #{{ r.rank }}</h5>
+        <span class="badge urgency-{{ r.urgency }}">
+            Urgency {{ r.urgency }}
+        </span>
+    </div>
+
+    <p><b>Name:</b> {{ r.name }}</p>
+    <p><b>Resource:</b> {{ r.resource }}</p>
+    <p><b>Votes:</b> {{ r.votes }}</p>
+
+    <p class="text-muted small">
+        {{ r.explanation }}
+    </p>
 </div>
 {% endfor %}
 {% endblock %}

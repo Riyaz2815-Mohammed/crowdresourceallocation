@@ -1,17 +1,28 @@
 {% extends "base.html" %}
+{% block title %}Vote{% endblock %}
 
 {% block content %}
-<h2>Community Voting</h2>
+<h3 class="mb-4">Community Voting</h3>
 
+<div class="row">
 {% for r in requests %}
-<div class="card">
-    <p><b>{{ r.resource }}</b></p>
-    <p>Requested by: {{ r.name }}</p>
-    <p>Reason: {{ r.reason }}</p>
-    <p>Votes: {{ r.votes|length }}</p>
+    <div class="col-md-4 mb-3">
+        <div class="card shadow p-3">
+            <h5>{{ r.resource }}</h5>
+            <p class="mb-1"><b>By:</b> {{ r.name }}</p>
+            <p class="small">{{ r.reason }}</p>
 
-    <a href="/vote/{{ r.id }}">Vote</a>
-</div>
+            <span class="badge urgency-{{ r.urgency }}">
+                Urgency {{ r.urgency }}
+            </span>
+
+            <p class="mt-2">Votes: {{ r.votes|length }}</p>
+
+            <a href="/vote/{{ r.id }}" class="btn btn-success btn-sm">
+                Vote
+            </a>
+        </div>
+    </div>
 {% endfor %}
-
+</div>
 {% endblock %}

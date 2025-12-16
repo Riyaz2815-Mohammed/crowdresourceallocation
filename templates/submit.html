@@ -1,14 +1,41 @@
-{% extends 'base.html' %}
-{% block title %}Submit{% endblock %}
+{% extends "base.html" %}
+{% block title %}Submit Request{% endblock %}
 
 {% block content %}
-<h2>Submit Resource Request</h2>
-<form method="POST">
-    <input name="name" placeholder="Your Name" required>
-    <input name="resource" placeholder="Resource Needed" required>
-    <label>Urgency (1 = Low, 5 = High)</label>
-    <input type="number" name="urgency" min="1" max="5" required>
-    <textarea name="reason" placeholder="Reason" required></textarea>
-    <button type="submit">Submit</button>
-</form>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow p-4">
+            <h4 class="mb-3 text-center">Submit Resource Request</h4>
+
+            <form method="post">
+                <div class="mb-3">
+                    <label class="form-label">Your Name</label>
+                    <input class="form-control" name="name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Resource</label>
+                    <select class="form-select" name="resource" required>
+                        {% for r in resources %}
+                            <option value="{{ r }}">{{ r }}</option>
+                        {% endfor %}
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Urgency (1–5)</label>
+                    <input type="number" class="form-control" name="urgency" min="1" max="5" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Reason</label>
+                    <textarea class="form-control" name="reason" rows="3" required></textarea>
+                </div>
+
+                <button class="btn btn-primary w-100">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
