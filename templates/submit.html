@@ -17,7 +17,7 @@
                     <label class="form-label">Resource</label>
                     <select class="form-select" name="resource" required>
                         {% for r in resources %}
-                            <option value="{{ r }}">{{ r }}</option>
+                            <option value="{{ r.name }}">{{ r.name  }}</option>
                         {% endfor %}
                         <option value="Other">Other</option>
                     </select>
