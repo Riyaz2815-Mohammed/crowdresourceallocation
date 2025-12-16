@@ -1,18 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>{% block title %}Crowd Allocation{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+        .card {
+            border-radius: 12px;
+        }
+        .urgency-1 { background: #d1e7dd; }
+        .urgency-2 { background: #cfe2ff; }
+        .urgency-3 { background: #fff3cd; }
+        .urgency-4 { background: #f8d7da; }
+        .urgency-5 { background: #dc3545; color: white; }
+    </style>
 </head>
+
 <body>
-    <div class="content">
-        <h1>Crowd-Sourced Resource Allocation</h1>
-        <nav>
-            <a href="/">Submit</a>
-            <a href="/vote">Vote</a>
-            <a href="/ranking">Ranking</a>
-        </nav>
-        {% block content %}{% endblock %}
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Crowd Allocation</a>
+
+        <div class="d-flex">
+            <a href="/" class="btn btn-outline-light me-2">Submit</a>
+            <a href="/vote" class="btn btn-outline-light me-2">Vote</a>
+            <a href="/ranking" class="btn btn-outline-light me-2">Ranking</a>
+
+            {% if session.get("is_admin") %}
+                <a href="/admin" class="btn btn-warning me-2">Admin</a>
+            {% endif %}
+
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
     </div>
+</nav>
+
+<!-- PAGE CONTENT -->
+<div class="container mt-4">
+    {% block content %}{% endblock %}
+</div>
+
 </body>
 </html>
