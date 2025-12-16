@@ -43,6 +43,7 @@ class Vote(db.Model):
     request_id = db.Column(db.Integer, db.ForeignKey("resource_request.id"), nullable=False)
 
 
+
 with app.app_context():
     db.create_all()
 
@@ -150,13 +151,34 @@ def ranking():
     if "user_id" not in session:
         return redirect("/login")
 
+    requests = ResourceRequest.query.filter_by(allocated=False).all()
+
     ranked = sorted(
-        ResourceRequest.query.filter_by(allocated=False).all(),
-        key=calculate_score,
+        requests,
+        key=lambda r: calculate_score(r),
         reverse=True
     )
 
-    return render_template("ranking.html", ranking=ranked)
+    ranking_data = []
+    for index, r in enumerate(ranked, start=1):
+        waiting_hours = int(
+            (datetime.now() - r.created_at).total_seconds() / 3600
+        )
+
+        ranking_data.append({
+            "rank": index,
+            "name": r.name,
+            "resource": r.resource,
+            "urgency": r.urgency,
+            "votes": len(r.votes),   # ✅ FIXED
+            "explanation": (
+                f"Ranked #{index} because it received {len(r.votes)} vote(s), "
+                f"urgency level {r.urgency}, "
+                f"and has been waiting for {waiting_hours} hour(s)."
+            )
+        })
+
+    return render_template("ranking.html", ranking=ranking_data)
 
 @app.route("/admin")
 def admin():
@@ -190,3 +212,6 @@ def allocate(id):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+
