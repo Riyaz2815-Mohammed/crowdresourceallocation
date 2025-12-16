@@ -6,6 +6,8 @@
 <form method="POST">
     <input name="name" placeholder="Your Name" required>
     <input name="resource" placeholder="Resource Needed" required>
+    <label>Urgency (1 = Low, 5 = High)</label>
+    <input type="number" name="urgency" min="1" max="5" required>
     <textarea name="reason" placeholder="Reason" required></textarea>
     <button type="submit">Submit</button>
 </form>

@@ -1,14 +1,15 @@
-{% extends 'base.html' %}
-{% block title %}Vote{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
 <h2>Community Voting</h2>
 
 {% for r in requests %}
 <div class="card">
-    <p><b>{{ r.resource }}</b> by {{ r.name }}</p>
-    <p>{{ r.reason }}</p>
+    <p><b>{{ r.resource }}</b></p>
+    <p>Requested by: {{ r.name }}</p>
+    <p>Reason: {{ r.reason }}</p>
     <p>Votes: {{ r.votes|length }}</p>
+
     <a href="/vote/{{ r.id }}">Vote</a>
 </div>
 {% endfor %}
