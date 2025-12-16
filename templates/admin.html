@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">Admin Dashboard</h3>
+
+<!-- RESOURCE STOCK -->
+<div class="card shadow mb-4 p-3">
+    <h5>Resource Stock</h5>
+    <table class="table table-bordered mt-2">
+        <thead class="table-dark">
+            <tr>
+                <th>Resource</th>
+                <th>Available Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in resources %}
+            <tr>
+                <td>{{ r.name }}</td>
+                <td>{{ r.stock }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- RANKED REQUESTS -->
+<div class="card shadow p-3">
+    <h5>Ranked Requests</h5>
+
+    {% if ranking|length == 0 %}
+        <p class="text-muted">No pending requests</p>
+    {% endif %}
+
+    {% for r in ranking %}
+    <div class="border rounded p-3 mb-3">
+        <div class="d-flex justify-content-between">
+            <h6>{{ r.resource }}</h6>
+            <span class="badge urgency-{{ r.urgency }}">
+                Urgency {{ r.urgency }}
+            </span>
+        </div>
+
+        <p class="mb-1"><b>User:</b> {{ r.name }}</p>
+        <p class="mb-1"><b>Votes:</b> {{ r.votes|length }}</p>
+        <p class="small text-muted">{{ r.reason }}</p>
+
+        <a href="/allocate/{{ r.id }}" class="btn btn-success btn-sm">
+            Allocate
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
