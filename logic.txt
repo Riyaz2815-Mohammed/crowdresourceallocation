@@ -1,0 +1,4 @@
+First logic is to Rank by the number of votes.
+so if two have the same no. of votes then we can go to the next logic.
+that is to rank by the timestamp.
+if the request has the high waiting time then it should be ranked higher by the extra points given by the logic itself.
