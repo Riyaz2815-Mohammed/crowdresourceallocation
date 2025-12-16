@@ -43,6 +43,8 @@ def hash_password(password):
 
 @app.route("/", methods=["GET", "POST"])
 def submit():
+    if "user_id" not in session:
+        return redirect("/login")
     if request.method == "POST":
         new_request = ResourceRequest(
             name=request.form["name"],
@@ -59,6 +61,9 @@ def submit():
 
 @app.route("/vote")
 def vote():
+    if "user_id" not in session:
+        return redirect("/login")
+
     requests = ResourceRequest.query.all()
     return render_template("vote.html", requests=requests)
 
@@ -143,6 +148,8 @@ def logout():
 
 @app.route("/ranking")
 def ranking():
+    if "user_id" not in session:
+        return redirect("/login")
     requests = ResourceRequest.query.all()
     
     # Sort requests individually by vote count
@@ -151,6 +158,8 @@ def ranking():
         key=lambda r : calculate_score(r),
         reverse=True
     )
+
+
 
     ranking_data = []
     for index, r in enumerate(ranked, start=1):
@@ -170,7 +179,47 @@ def ranking():
 
     return render_template("ranking.html", ranking=ranking_data)
 
+def admin_required():
+    return session.get("is_admin")
+@app.route("/allocate/<int:id>")
+def allocate(id):
+    if not session.get("is_admin"):
+        return "Access denied"
 
+    req = ResourceRequest.query.get_or_404(id)
+    resource = Resource.query.filter_by(name=req.resource).first()
+
+    if not resource or resource.stock <= 0:
+        return "Out of stock"
+
+    if req.allocated:
+        return "Already allocated"
+
+    resource.stock -= 1
+    req.allocated = True
+    db.session.commit()
+
+    return redirect("/admin")
+
+@app.route("/admin")
+def admin():
+    if not session.get("is_admin"):
+        return "Access denied"
+
+    resources = Resource.query.all()
+    requests = ResourceRequest.query.all()
+
+    ranked = sorted(
+        [r for r in requests if not r.allocated],
+        key=lambda r: calculate_score(r),
+        reverse=True
+    )
+
+    return render_template(
+        "admin.html",
+        resources=resources,
+        ranking=ranked
+    )
 
 
 if __name__ == "__main__":
