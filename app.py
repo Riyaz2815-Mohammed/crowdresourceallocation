@@ -41,15 +41,16 @@ class User(db.Model):
 
 with app.app_context():
     db.create_all()
-    
-    # Add initial resources if they don't exist
+
+    # Initialize resources if they don't exist
     if not Resource.query.first():
-        resources = [
-            Resource(name="Laptop", stock=10),
-            Resource(name="Projector", stock=5),
-            Resource(name="Tablet", stock=8)
+        initial_resources = [
+            {"name": "Laptop", "stock": 5},
+            {"name": "Projector", "stock": 3},
+            {"name": "WiFi Dongle", "stock": 10},
         ]
-        db.session.bulk_save_objects(resources)
+        for res in initial_resources:
+            db.session.add(Resource(**res))
         db.session.commit()
 
 def hash_password(password):
@@ -104,4 +105,5 @@ def calculate_score(request):
     votes = len(request.votes)
     vote_score = votes * 10
     urgency_score = request.urgency * 2
-    waiting_hours = (now - request.created_at).total_seconds() /
+    waiting_hours = (now - request.created_at).total_seconds() / 3600
+    return vote_score + urgency_score - waiting_hours   
