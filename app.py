@@ -11,27 +11,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-# Models
-class Resource(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    stock = db.Column(db.Integer, nullable=False)
-
-class ResourceRequest(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    resource = db.Column(db.String(200), nullable=False)
-    reason = db.Column(db.Text, nullable=False)
-    urgency = db.Column(db.Integer, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.now)
-    allocated = db.Column(db.Boolean, default=False)
-
-    votes = db.relationship("Vote", backref="request", lazy=True)
-
-class Vote(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    request_id = db.Column(db.Integer, db.ForeignKey("resource_request.id"), nullable=False)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,71 +18,175 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
+
+class Resource(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    stock = db.Column(db.Integer, nullable=False)
+
+
+class ResourceRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    resource = db.Column(db.String(200), nullable=False)
+    reason = db.Column(db.Text, nullable=False)
+    urgency = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    allocated = db.Column(db.Boolean, default=False)
+
+    votes = db.relationship("Vote", backref="request", lazy=True)
+
+
+class Vote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    request_id = db.Column(db.Integer, db.ForeignKey("resource_request.id"), nullable=False)
+
+
 with app.app_context():
     db.create_all()
 
-    # Initialize resources if they don't exist
+    # Initial resources
     if not Resource.query.first():
-        initial_resources = [
-            {"name": "Laptop", "stock": 5},
-            {"name": "Projector", "stock": 3},
-            {"name": "WiFi Dongle", "stock": 10},
-        ]
-        for res in initial_resources:
-            db.session.add(Resource(**res))
+        db.session.add_all([
+            Resource(name="Laptop", stock=5),
+            Resource(name="Projector", stock=3),
+            Resource(name="WiFi Dongle", stock=10)
+        ])
         db.session.commit()
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
+def calculate_score(req):
+    votes = len(req.votes) * 10
+    urgency = req.urgency * 2
+    waiting_hours = min(
+        (datetime.utcnow() - req.created_at).total_seconds() / 3600,
+        10
+    )
+    return votes + urgency + waiting_hours
+
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        user = User(
+            username=request.form["username"],
+            password=hash_password(request.form["password"])
+        )
+        db.session.add(user)
+        db.session.commit()
+        return redirect("/login")
+    return render_template("register.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        user = User.query.filter_by(username=request.form["username"]).first()
+        if user and user.password == hash_password(request.form["password"]):
+            session["user_id"] = user.id
+            session["is_admin"] = user.is_admin
+            return redirect("/")
+        return "Invalid credentials"
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
+
+
 @app.route("/", methods=["GET", "POST"])
 def submit():
     if "user_id" not in session:
         return redirect("/login")
-    
+
     if request.method == "POST":
-        new_request = ResourceRequest(
+        req = ResourceRequest(
             name=request.form["name"],
             resource=request.form["resource"],
             reason=request.form["reason"],
             urgency=int(request.form["urgency"])
         )
-        db.session.add(new_request)
+        db.session.add(req)
         db.session.commit()
-        return redirect(url_for("vote"))
+        return redirect("/vote")
 
     resources = Resource.query.all()
     return render_template("submit.html", resources=resources)
+
 
 @app.route("/vote")
 def vote():
     if "user_id" not in session:
         return redirect("/login")
+    return render_template("vote.html", requests=ResourceRequest.query.all())
 
-    requests = ResourceRequest.query.all()
-    return render_template("vote.html", requests=requests)
 
 @app.route("/vote/<int:id>")
 def cast_vote(id):
     if "user_id" not in session:
         return redirect("/login")
-    
-    user_id = session["user_id"]
-    existing_vote = Vote.query.filter_by(user_id=user_id, request_id=id).first()
-    
-    if existing_vote:
-        return "You have already voted for this request"
-    
-    vote = Vote(user_id=user_id, request_id=id)
-    db.session.add(vote)
-    db.session.commit()
-    
-    return redirect(url_for("vote"))
 
-def calculate_score(request):
-    now = datetime.now()
-    votes = len(request.votes)
-    vote_score = votes * 10
-    urgency_score = request.urgency * 2
-    waiting_hours = (now - request.created_at).total_seconds() / 3600
-    return vote_score + urgency_score - waiting_hours   
+    existing = Vote.query.filter_by(
+        user_id=session["user_id"],
+        request_id=id
+    ).first()
+
+    if existing:
+        return "Already voted"
+
+    db.session.add(Vote(user_id=session["user_id"], request_id=id))
+    db.session.commit()
+    return redirect("/vote")
+
+
+@app.route("/ranking")
+def ranking():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    ranked = sorted(
+        ResourceRequest.query.filter_by(allocated=False).all(),
+        key=calculate_score,
+        reverse=True
+    )
+
+    return render_template("ranking.html", ranking=ranked)
+
+@app.route("/admin")
+def admin():
+    if not session.get("is_admin"):
+        return "Access denied"
+
+    return render_template(
+        "admin.html",
+        resources=Resource.query.all(),
+        ranking=ResourceRequest.query.filter_by(allocated=False).all()
+    )
+
+
+@app.route("/allocate/<int:id>")
+def allocate(id):
+    if not session.get("is_admin"):
+        return "Access denied"
+
+    req = ResourceRequest.query.get_or_404(id)
+    res = Resource.query.filter_by(name=req.resource).first()
+
+    if not res or res.stock <= 0:
+        return "Out of stock"
+
+    res.stock -= 1
+    req.allocated = True
+    db.session.commit()
+
+    return redirect("/admin")
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
