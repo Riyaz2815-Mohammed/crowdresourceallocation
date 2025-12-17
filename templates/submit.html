@@ -16,15 +16,17 @@
                 <div class="mb-3">
                     <label class="form-label">Resource</label>
                     <select class="form-select" name="resource" required>
+                        <option value="" disabled selected>Select resource</option>
                         {% for r in resources %}
-                            <option value="{{ r.name }}">{{ r.name  }}</option>
+                            {% if r.stock > 0 %}        
+                            <option value="{{ r.name }}">{{ r.name }} ({{ r.stock }} available)</option>
+                            {% endif %}
                         {% endfor %}
-                        <option value="Other">Other</option>
                     </select>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Urgency (1–5)</label>
+                    <label class="form-label">Urgency (1-5)</label>
                     <input type="number" class="form-control" name="urgency" min="1" max="5" required>
                 </div>
 
