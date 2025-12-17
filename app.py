@@ -27,15 +27,15 @@ class Resource(db.Model):
 
 class ResourceRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))  
     name = db.Column(db.String(100), nullable=False)
     resource = db.Column(db.String(200), nullable=False)
     reason = db.Column(db.Text, nullable=False)
     urgency = db.Column(db.Integer, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     allocated = db.Column(db.Boolean, default=False)
 
     votes = db.relationship("Vote", backref="request", lazy=True)
-
 
 class Vote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -71,7 +71,7 @@ def calculate_score(req):
     votes = len(req.votes) * 10
     urgency = req.urgency * 2
     waiting_hours = min(
-        (datetime.utcnow() - req.created_at).total_seconds() / 3600,
+        (datetime.now() - req.created_at).total_seconds() / 3600,
         10
     )
     return votes + urgency + waiting_hours
@@ -116,6 +116,7 @@ def submit():
 
     if request.method == "POST":
         req = ResourceRequest(
+            user_id=session["user_id"],             
             name=request.form["name"],
             resource=request.form["resource"],
             reason=request.form["reason"],
@@ -134,6 +135,18 @@ def vote():
     if "user_id" not in session:
         return redirect("/login")
     return render_template("vote.html", requests=ResourceRequest.query.all())
+
+@app.route("/my-requests")
+def my_requests():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    requests = ResourceRequest.query.filter_by(
+        user_id=session["user_id"]
+    ).order_by(ResourceRequest.created_at.desc()).all()
+
+    return render_template("my_requests.html", requests=requests)
+
 
 
 @app.route("/vote/<int:id>")
