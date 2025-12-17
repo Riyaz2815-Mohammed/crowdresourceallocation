@@ -52,7 +52,15 @@ with app.app_context():
         db.session.add_all([
             Resource(name="Laptop", stock=5),
             Resource(name="Projector", stock=3),
-            Resource(name="WiFi Dongle", stock=10)
+            Resource(name="WiFi Dongle", stock=10),
+            Resource(name="Tablet", stock=4),
+            Resource(name="External Hard Drive", stock=6),
+            Resource(name="Headphones", stock=8),
+            Resource(name="Webcam", stock=7),   
+            Resource(name="Microphone", stock=5),
+            Resource(name="Smartphone", stock=9),
+            Resource(name="Speakers", stock=2),
+            Resource(name="CPU",stock=5)
         ])
         db.session.commit()
 
@@ -170,7 +178,7 @@ def ranking():
             "name": r.name,
             "resource": r.resource,
             "urgency": r.urgency,
-            "votes": len(r.votes),   # ✅ FIXED
+            "votes": len(r.votes),   
             "explanation": (
                 f"Ranked #{index} because it received {len(r.votes)} vote(s), "
                 f"urgency level {r.urgency}, "
