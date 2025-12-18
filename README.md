@@ -1,4 +1,4 @@
-# 🚀 Crowd-Sourced Resource Allocation Tool
+#  Crowd-Sourced Resource Allocation Tool
 
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
 ![Flask](https://img.shields.io/badge/Flask-Web%20Framework-black)
@@ -9,7 +9,7 @@
 A full-stack web application designed to **fairly allocate limited resources** under high demand using **community voting, urgency scoring, waiting-time logic, and explainable ranking**.
 
 
-## 📌 Problem Statement
+##  Problem Statement
 
 In many real-world scenarios (colleges, offices, labs), resources such as laptops, projectors, or network devices are limited.  
 Allocating them fairly becomes difficult and often leads to biased or unclear decisions.
@@ -75,13 +75,6 @@ Where:
 - **Votes** = Number of community votes  
 - **Urgency** = User-selected urgency (1–5)  
 - **Waiting Time Bonus** = Based on how long the request has been waiting (max 10 points)
-
-### ✅ Why this works
-- Votes represent community importance  
-- Urgency captures critical needs  
-- Waiting time ensures fairness over time  
-
-Every ranked request is shown with a **human-readable explanation**, making the system transparent and trustworthy.
 
 
 
