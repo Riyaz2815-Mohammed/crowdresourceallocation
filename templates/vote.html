@@ -11,6 +11,15 @@
             <h5>{{ r.resource }}</h5>
             <p class="mb-1"><b>By:</b> {{ r.name }}</p>
             <p class="small">{{ r.reason }}</p>
+            <p>
+Status:
+{% if r.allocated %}
+    <span class="badge bg-success">Allocated</span>
+{% else %}
+    <span class="badge bg-warning">Pending</span>
+{% endif %}
+</p>
+
 
             <span class="badge urgency-{{ r.urgency }}">
                 Urgency {{ r.urgency }}
@@ -18,9 +27,12 @@
 
             <p class="mt-2">Votes: {{ r.votes|length }}</p>
 
-            <a href="/vote/{{ r.id }}" class="btn btn-success btn-sm">
-                Vote
-            </a>
+            {% if r.allocated %}
+                <span class="badge bg-success">Allocated</span>
+            {% else %}
+                <a href="/vote/{{ r.id }}" class="btn btn-primary btn-sm">Vote</a>
+            {% endif %}
+
         </div>
     </div>
 {% endfor %}
