@@ -127,6 +127,13 @@ Where:
 ### 📝 Submit Request
 ![Submit Request](screenshots/submit.png)
 
+### 🧑‍💼 Request History
+![Request History](screenshots/history.png)
+
+### 🧑‍💼 Admin Dashboard
+![Admin Dashboard](screenshots/dash.png)
+
+
 ### 🗳️ Voting Page
 ![Voting Page](screenshots/voting.png)
 
