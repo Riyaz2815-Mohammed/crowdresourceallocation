@@ -119,3 +119,29 @@ Where:
 - Admin-only allocation authority
 
 
+## 📸 Screenshots
+
+### 🔐 Login Page
+![Login Page](screenshots/login.png )
+
+### 📝 Submit Request
+![Submit Request](screenshots/submit.png)
+
+### 🗳️ Voting Page
+![Voting Page](screenshots/voting.png)
+
+### 📊 Ranking Page
+![Ranking Page](screenshots/ranking.png)
+
+### 🧑‍💼 Admin Special pop up
+![Admin Dashboard](screenshots/adminspecial.png)
+
+### 🧑‍💼 Admin Dashboard
+![Admin Dashboard](screenshots/dash.png)
+
+### 🧑‍💼 Admin allocation
+![Admin Dashboard](screenshots/allocate.png)
+
+
+
+
