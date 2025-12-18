@@ -148,11 +148,15 @@ def my_requests():
     return render_template("my_requests.html", requests=requests)
 
 
-
 @app.route("/vote/<int:id>")
 def cast_vote(id):
     if "user_id" not in session:
         return redirect("/login")
+
+    req = ResourceRequest.query.get_or_404(id)
+
+    if req.allocated:
+        return "Voting closed for this request"
 
     existing = Vote.query.filter_by(
         user_id=session["user_id"],
@@ -160,7 +164,7 @@ def cast_vote(id):
     ).first()
 
     if existing:
-        return "Already voted"
+        return "You have already voted"
 
     db.session.add(Vote(user_id=session["user_id"], request_id=id))
     db.session.commit()
