@@ -138,7 +138,7 @@ Where:
 ![Voting Page](screenshots/voting.png)
 
 ### 📊 Ranking Page
-![Ranking Page](screenshots/ranking.png)
+![Ranking Page](screenshots/rank.png)
 
 ### 🧑‍💼 Admin Special pop up
 ![Admin Dashboard](screenshots/adminspecial.png)
